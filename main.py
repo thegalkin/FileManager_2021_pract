@@ -1,6 +1,7 @@
 
 
-from os import chdir, getcwd, mkdir, pathconf, path, remove, rename, rmdir
+from os import chdir, getcwd, mkdir, pathconf, path, remove, rename, rmdir, walk
+from posix import listdir
 import shutil as sh
 
 
@@ -15,58 +16,68 @@ class FileManager:
 
     def eraseToBaseFolder(self):
         chdir(self.motherPath)
-        print("erasing to base folder")
+
     
     def moveUp(self):
         chdir(self.motherPath.parent)
-        print("moving up")
+        print("\n moving up \n")
 
     def openDir(self, name):
         chdir(path.join(getcwd(), name))
-        print("opening dir...")
+        print("\n opening dir...\n")
 
     def createDir(self, name):
         mkdir(name)
-        print("creating dir")
+        print("\ncreating dir\n")
 
     def deleteDir(self, name):
         rmdir(name)
-        print("deleting dir")
+        print("\ndeleting dir\n")
     
     def changeDir(self, name):
         chdir(name)
-        print("changing dir")
+        print("\nchanging dir\n")
     
     def createFile(self, name):
         f = open(name, "w+")
         f.write("")
         f.close()
-        print("creating dir")
+        print("\ncreating file\n")
     
     def writeToFile(self, name, text):
         with open(name, "a") as f:
             f.write(text)
-        print("writing to file")
+        print("\nwriting to file\n")
     
     def readFile(self, name):
         with open(name, "r") as f:
             print(f.read())
-        print("reading file")
+        print("\nreading file\n")
     
     def deleteFile(self, name):
         remove(name)
-        print("deleting file ")
+        print("\ndeleting file\n ")
     
     def copyPaste(self, name, whereTo):
-        sh.copyfile(name, path.join(self.motherPath, whereTo))
-        print("copying ")
+        if whereTo == "..":
+            sh.copyfile(name, self.motherPath)
+        else:
+            sh.copyfile(name, path.join(self.motherPath, whereTo))
+        print("\ncopying\n ")
 
     def cutPaste(self, name, whereTo):
-        sh.move(name, path.join(self.motherPath, whereTo))
-        print("cutting ")
+        if whereTo == "..":
+            sh.move(name, self.motherPath)
+        else:
+            sh.move(name, path.join(self.motherPath, whereTo))
+        print("\ncutting\n ")
+
     def renameFile(self, oldName, newName):
         rename(oldName, newName)
-        print("renaming")
+        print("\nrenaming\n")
+    
+    def ls(self):
+        list(map(print,listdir()))
 
 def cmdCheck(inp, cmdName):
     if inp == cmdName:
@@ -75,13 +86,17 @@ def cmdCheck(inp, cmdName):
         return False
 
 
-cmds = ["", "", ""]
+cmds = ["",]
 fm = FileManager()
 while cmds[0] != "exit":
     cmds = input().split(" ")
-    print(cmds)
-    cmd = cmds[0]
-    cmdBody = cmds[1] 
+    if len(cmds) > 0 and cmds[0] != "":
+        cmd = cmds[0]
+    else:
+        print("empty line \n")
+        pass
+    if len(cmds) > 1:
+        cmdBody = cmds[1] 
     if cmdCheck(cmd, "createDir"):
         fm.createDir(cmdBody)
     if cmdCheck(cmd, "deleteDir"):
@@ -93,7 +108,7 @@ while cmds[0] != "exit":
     if cmdCheck(cmd, "readFile"):
         fm.readFile(cmdBody)
     if cmdCheck(cmd, "deleteFile"):
-        fm.deleteDir(cmdBody)
+        fm.deleteFile(cmdBody)
     if cmdCheck(cmd, "copyPaste"):
         fm.copyPaste(cmds[1], cmds[2])
     if cmdCheck(cmd, "cutPaste"):
@@ -104,4 +119,6 @@ while cmds[0] != "exit":
         fm.moveUp()
     if cmdCheck(cmd, "openDir"):
         fm.openDir(cmdBody)
-    print("cycle end")
+    if cmdCheck(cmd, "ls"):
+        fm.ls()
+    cmds = [""]
