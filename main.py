@@ -60,14 +60,14 @@ class FileManager:
     
     def copyPaste(self, name, whereTo):
         if whereTo == "..":
-            sh.copyfile(name, self.motherPath)
+            sh.copyfile(name, path.join(self.motherPath, name))
         else:
             sh.copyfile(name, path.join(self.motherPath, whereTo))
         print("\ncopying\n ")
 
     def cutPaste(self, name, whereTo):
         if whereTo == "..":
-            sh.move(name, self.motherPath)
+            sh.move(name, path.join(self.motherPath, name))
         else:
             sh.move(name, path.join(self.motherPath, whereTo))
         print("\ncutting\n ")
